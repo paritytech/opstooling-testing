@@ -1,0 +1,24 @@
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
+    - name: Install
+      run: yarn install --immutable --network-concurrency 1
+
+    - name: Lint
+      run: yarn lint
+
+    - name: Typecheck
+      run: yarn typecheck
