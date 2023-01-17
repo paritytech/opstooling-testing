@@ -3,7 +3,13 @@ import * as mockttp from "mockttp";
 import path from "path";
 import selfsigned from "selfsigned";
 
-/*
+export type MockServerParams = {
+  port: number;
+  name: string;
+  testCaCertPath: string; // Something like "testdir/test-ca.pem", a .key file will be also created nearby
+};
+
+/**
 Instances of mockttp.Mockttp, which are returned by startMockServer
 are expected to reside in the same process as your test code,
 in order to control the mocking behaviour.
@@ -15,13 +21,6 @@ but `beforeAll`/`afterAll` in every test suite also works
 Pay attention to `testCaPath` parameter, as in order to make Node respect that,
 you'll have to pass it in NODE_EXTRA_CA_CERTS in environment.
 */
-
-export type MockServerParams = {
-  port: number;
-  name: string;
-  testCaCertPath: string; // Something like "testdir/test-ca.pem", a .key file will be also created nearby
-};
-
 export async function startMockServer(params: MockServerParams): Promise<mockttp.Mockttp> {
   const certPath = params.testCaCertPath;
   const keyPath = path.join(path.dirname(certPath), `${path.basename(certPath, ".pem")}.key`);
