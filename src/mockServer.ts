@@ -10,22 +10,19 @@ export type MockServerParams = {
 };
 
 /**
-Instances of mockttp.Mockttp, which are returned by startMockServer
-are expected to reside in the same process as your test code,
-in order to control the mocking behaviour.
-Thus, using it in `globalSetup`/`globalTeardown` won't work.
+ Instances of mockttp.Mockttp, which are returned by startMockServer
+ are expected to reside in the same process as your test code,
+ in order to control the mocking behaviour.
+ Thus, using it in `globalSetup`/`globalTeardown` won't work.
 
-`setupAfterEnv` is a good place to have it,
-but `beforeAll`/`afterAll` in every test suite also works
+ `setupAfterEnv` is a good place to have it,
+ but `beforeAll`/`afterAll` in every test suite also works
 
-Pay attention to `testCaPath` parameter, as in order to make Node respect that,
-you'll have to pass it in NODE_EXTRA_CA_CERTS in environment.
-*/
+ Pay attention to `testCaPath` parameter, as in order to make Node respect that,
+ you'll have to pass it in NODE_EXTRA_CA_CERTS in environment.
+ */
 export async function startMockServer(params: MockServerParams): Promise<mockttp.Mockttp> {
-  const certPath = params.testCaCertPath;
-  const keyPath = path.join(path.dirname(certPath), `${path.basename(certPath, ".pem")}.key`);
-
-  await ensureCert(certPath, keyPath);
+  const { keyPath, certPath } = await ensureCert(params.testCaCertPath);
 
   const defaultParams = { https: { keyPath, certPath } };
 
@@ -43,7 +40,12 @@ export async function startMockServer(params: MockServerParams): Promise<mockttp
   return server;
 }
 
-async function ensureCert(certPath: string, keyPath: string): Promise<void> {
+export async function ensureCert(testCaCertPath: string): Promise<{ certPath: string; keyPath: string }> {
+  const certPath = testCaCertPath;
+  const keyPath = path.join(path.dirname(certPath), `${path.basename(certPath, ".pem")}.key`);
+
+  await fs.mkdir(path.dirname(certPath), { recursive: true });
+
   try {
     await fs.stat(certPath);
   } catch (e) {
@@ -55,4 +57,6 @@ async function ensureCert(certPath: string, keyPath: string): Promise<void> {
     await fs.writeFile(keyPath, pems.private);
     await fs.writeFile(certPath, pems.cert);
   }
+
+  return { certPath, keyPath };
 }
