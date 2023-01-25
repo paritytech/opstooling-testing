@@ -49,6 +49,7 @@ export async function initRepo(
   owner: string,
   repoName: string,
   additionalBranches: string[],
+  additionalTags: string[],
 ): Promise<RepoRefs> {
   const repoPath = path.join(rootPath, owner, repoName);
 
@@ -75,6 +76,16 @@ export async function initRepo(
 
     repoRefs[branch] = {
       type: "branch",
+      sha: (await execFilePromise("git", ["rev-parse", "HEAD"], { cwd: repoPath })).stdout.trim(),
+    };
+  }
+
+  for (const tag of additionalTags) {
+    await execFilePromise("git", ["commit", "--allow-empty", "-m", `commit for ${tag}`], { cwd: repoPath });
+    await execFilePromise("git", ["tag", tag], { cwd: repoPath });
+
+    repoRefs[tag] = {
+      type: "tag",
       sha: (await execFilePromise("git", ["rev-parse", "HEAD"], { cwd: repoPath })).stdout.trim(),
     };
   }
