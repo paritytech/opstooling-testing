@@ -1,8 +1,11 @@
 import { RestEndpointMethodTypes } from "@octokit/rest";
+import { Repository as WebhooksRepository } from "@octokit/webhooks-types";
 
 import { getUserPayload } from "./user";
 
-export type Repository = RestEndpointMethodTypes["repos"]["get"]["response"]["data"];
+// These types from "@octokit/rest" and "@octokit/webhooks-types" are the same, but with minor TS semantics.
+// Defining it as an intersection solves those.
+export type Repository = RestEndpointMethodTypes["repos"]["get"]["response"]["data"] & WebhooksRepository;
 
 export function getRepoPayload(params: { name: string; owner: string; node_id?: string }): Repository {
   return {

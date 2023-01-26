@@ -1,13 +1,17 @@
 import { RestEndpointMethodTypes } from "@octokit/rest";
+import { Committer, User as WebhooksUser } from "@octokit/webhooks-types";
 
-export type User = RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"];
+// These types from "@octokit/rest" and "@octokit/webhooks-types" are the same, but with minor TS semantics.
+// Defining it as an intersection solves those.
+export type User = RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"] & WebhooksUser;
 
-export function getUserPayload(params: { id: number; login: string }): User {
+export function getUserPayload(params: { id?: number; login: string }): User {
+  const id = params.id ?? 588262;
   return {
     login: params.login,
-    id: params.id,
+    id,
     node_id: "MDQ6VXNlcjU4ODI2Mg==",
-    avatar_url: `https://avatars.githubusercontent.com/u/${params.id}?v=4`,
+    avatar_url: `https://avatars.githubusercontent.com/u/${id}?v=4`,
     gravatar_id: "",
     url: `https://api.github.com/users/${params.login}`,
     html_url: `https://github.com/${params.login}`,
@@ -39,7 +43,7 @@ export function getUserPayload(params: { id: number; login: string }): User {
 }
 
 export type GitUser =
-  RestEndpointMethodTypes["repos"]["getBranch"]["response"]["data"]["commit"]["commit"]["committer"];
+  RestEndpointMethodTypes["repos"]["getBranch"]["response"]["data"]["commit"]["commit"]["committer"] & Committer;
 
 // Date is optional in Committer, however, it can be mandatory in usages of Committer
 export function getGitUserPayload(params: { login: string; email: string }): GitUser {

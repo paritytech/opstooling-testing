@@ -49,16 +49,23 @@ export async function initRepo(
   owner: string,
   repoName: string,
   additionalBranches: string[],
+  additionalTags: string[],
 ): Promise<RepoRefs> {
   const repoPath = path.join(rootPath, owner, repoName);
 
   // Scrape repos clean, as we're doing pulls/pushes, and assert on results
   await fs.rm(repoPath, { force: true, recursive: true });
   await fs.mkdir(repoPath, { recursive: true });
+
   /* potentially we might want to have some meaningful setup for repositories,
      but for now we can pull and force-push to repos of any state */
   await execFilePromise("git", ["init", "--quiet", "-b", "master"], { cwd: repoPath });
   await fs.writeFile(path.join(repoPath, "README.md"), "bump");
+
+  // Setting git config for repos, unifying environment across devs and CI
+  await execFilePromise("git", ["config", "user.email", "bot@example.com"], { cwd: repoPath });
+  await execFilePromise("git", ["config", "user.name", "Robot Tester"], { cwd: repoPath });
+  await execFilePromise("git", ["config", "commit.gpgsign", "false"], { cwd: repoPath });
 
   await execFilePromise("git", ["add", "README.md"], { cwd: repoPath });
   await execFilePromise("git", ["commit", "-m", "initial commit"], { cwd: repoPath });
@@ -75,6 +82,16 @@ export async function initRepo(
 
     repoRefs[branch] = {
       type: "branch",
+      sha: (await execFilePromise("git", ["rev-parse", "HEAD"], { cwd: repoPath })).stdout.trim(),
+    };
+  }
+
+  for (const tag of additionalTags) {
+    await execFilePromise("git", ["commit", "--allow-empty", "-m", `commit for ${tag}`], { cwd: repoPath });
+    await execFilePromise("git", ["tag", tag], { cwd: repoPath });
+
+    repoRefs[tag] = {
+      type: "tag",
       sha: (await execFilePromise("git", ["rev-parse", "HEAD"], { cwd: repoPath })).stdout.trim(),
     };
   }

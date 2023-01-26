@@ -28,7 +28,7 @@
     "@octokit/webhooks-types": "^5.8.0",
     "@types/node-fetch": "^2.6.2",
     "@types/node": "^16",
-    "opstooling-js-style": "https://github.com/paritytech/opstooling-js-style#83439524ac5201d433f19c66b3a43977fbb801b8",
+    "opstooling-js-style": "https://github.com/paritytech/opstooling-js-style#c298d0f732d93712e4397fd53baa3317a3022c8c",
     "ts-patch": "^2.0.2",
     "typescript": "^4.6.2",
     "typescript-transform-paths": "^3.4.4"
