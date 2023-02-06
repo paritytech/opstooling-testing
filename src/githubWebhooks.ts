@@ -6,6 +6,7 @@ export type TriggerWebhookParams = {
   payload: WebhookEvent;
   githubEventHeader: string;
   port: number;
+  eventId?: string;
 };
 
 export async function triggerWebhook(params: TriggerWebhookParams): Promise<void> {
@@ -20,7 +21,7 @@ export async function triggerWebhook(params: TriggerWebhookParams): Promise<void
       "X-Hub-Signature": `sha1=${signature1}`,
       "X-Hub-Signature-256": `sha256=${signature256}`,
       "X-GitHub-Event": params.githubEventHeader,
-      "X-GitHub-Delivery": "72d3162e-cc78-11e3-81ab-4c9367dc0958",
+      "X-GitHub-Delivery": params.eventId ?? "72d3162e-cc78-11e3-81ab-4c9367dc0958",
     },
   });
 }

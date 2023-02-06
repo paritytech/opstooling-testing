@@ -18,6 +18,8 @@ export type PullRequestParams = {
   repo: string;
   headBranch: string;
   number?: number;
+  repoNodeId?: string;
+  headCommit: string;
 };
 
 export function getPullRequestsPayload(params: PullRequestParams[]): PullRequest[] {
@@ -55,20 +57,28 @@ export function getPullRequestPayload(params: PullRequestParams): PullRequest {
     review_comments_url: `https://api.github.com/repos/${params.org}/${params.repo}/pulls/4/comments`,
     review_comment_url: `https://api.github.com/repos/${params.org}/${params.repo}/pulls/comments{/number}`,
     comments_url: `https://api.github.com/repos/${params.org}/${params.repo}/issues/4/comments`,
-    statuses_url: `https://api.github.com/repos/${params.org}/${params.repo}/statuses/0c84e6dd0ccd531206c8137a2e2e9edaa9907e5d`,
+    statuses_url: `https://api.github.com/repos/${params.org}/${params.repo}/statuses/${params.headCommit}`,
     head: {
       label: `${params.org}:${params.headBranch}`,
       ref: params.headBranch,
-      sha: "0c84e6dd0ccd531206c8137a2e2e9edaa9907e5d",
+      sha: params.headCommit,
       user: getUserPayload({ id: 588262, login: params.login }),
-      repo: getRepoPayload({ name: params.repo, owner: params.org }) as PullRequest["head"]["repo"],
+      repo: getRepoPayload({
+        name: params.repo,
+        owner: params.org,
+        node_id: params.repoNodeId,
+      }) as PullRequest["head"]["repo"],
     },
     base: {
       label: `${params.org}:master`,
       ref: "master",
       sha: "d788763294b8094c66620294725edfc3f653a4ff",
       user: getUserPayload({ id: 74720417, login: params.org }),
-      repo: getRepoPayload({ name: params.repo, owner: params.org }) as PullRequest["base"]["repo"],
+      repo: getRepoPayload({
+        name: params.repo,
+        owner: params.org,
+        node_id: params.repoNodeId,
+      }) as PullRequest["base"]["repo"],
     },
     _links: {
       self: { href: `https://api.github.com/repos/${params.org}/${params.repo}/pulls/4` },
@@ -78,9 +88,7 @@ export function getPullRequestPayload(params: PullRequestParams): PullRequest {
       review_comments: { href: `https://api.github.com/repos/${params.org}/${params.repo}/pulls/4/comments` },
       review_comment: { href: `https://api.github.com/repos/${params.org}/${params.repo}/pulls/comments{/number}` },
       commits: { href: `https://api.github.com/repos/${params.org}/${params.repo}/pulls/4/commits` },
-      statuses: {
-        href: `https://api.github.com/repos/${params.org}/${params.repo}/statuses/0c84e6dd0ccd531206c8137a2e2e9edaa9907e5d`,
-      },
+      statuses: { href: `https://api.github.com/repos/${params.org}/${params.repo}/statuses/${params.headCommit}` },
     },
     author_association: "MEMBER",
     auto_merge: null,

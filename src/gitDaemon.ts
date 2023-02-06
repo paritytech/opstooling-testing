@@ -20,6 +20,8 @@ export function getRepoPath(dataDir: string, gitDaemonName: string, owner: strin
 export async function startDaemon(name: string, port: number, dataDir: string): Promise<ChildProcess> {
   const daemonRootPath = getRootPath(dataDir, name);
 
+  await fs.rm(daemonRootPath, { recursive: true, force: true });
+
   await fs.mkdir(daemonRootPath, { recursive: true });
 
   return spawn(
@@ -87,6 +89,9 @@ export async function initRepo(
   }
 
   for (const tag of additionalTags) {
+    // Diverting tags from master, so they wouldn't be copied by `copyRepo`
+    await execFilePromise("git", ["checkout", "master"], { cwd: repoPath });
+    await execFilePromise("git", ["checkout", "-b", `b-${tag}`], { cwd: repoPath });
     await execFilePromise("git", ["commit", "--allow-empty", "-m", `commit for ${tag}`], { cwd: repoPath });
     await execFilePromise("git", ["tag", tag], { cwd: repoPath });
 
@@ -115,9 +120,11 @@ export async function copyRepo(
   // Scrape repos clean, as we're doing pulls/pushes, and assert on results
   await fs.rm(repoPath, { force: true, recursive: true });
 
-  await execFilePromise("git", ["clone", fromUrl, repoPath]);
+  await execFilePromise("git", ["clone", "-b", "master", "--single-branch", fromUrl, repoPath]);
 
   for (const branch of additionalBranches) {
+    await execFilePromise("git", ["remote", "set-branches", "--add", "origin", branch], { cwd: repoPath });
+    await execFilePromise("git", ["fetch", "origin", branch], { cwd: repoPath });
     await execFilePromise("git", ["checkout", branch], { cwd: repoPath });
   }
 
