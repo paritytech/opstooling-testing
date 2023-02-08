@@ -69,6 +69,9 @@ export async function initRepo(
   await execFilePromise("git", ["config", "user.name", "Robot Tester"], { cwd: repoPath });
   await execFilePromise("git", ["config", "commit.gpgsign", "false"], { cwd: repoPath });
 
+  // Enabling receive on master
+  await execFilePromise("git", ["config", "receive.denyCurrentBranch", "updateInstead"], { cwd: repoPath });
+
   await execFilePromise("git", ["add", "README.md"], { cwd: repoPath });
   await execFilePromise("git", ["commit", "-m", "initial commit"], { cwd: repoPath });
 
@@ -128,6 +131,9 @@ export async function copyRepo(
     await execFilePromise("git", ["checkout", branch], { cwd: repoPath });
   }
 
-  // resetting working tree
+  // Resetting working tree
   await execFilePromise("git", ["checkout", "master"], { cwd: repoPath });
+
+  // Enabling receive on master
+  await execFilePromise("git", ["config", "receive.denyCurrentBranch", "updateInstead"], { cwd: repoPath });
 }
