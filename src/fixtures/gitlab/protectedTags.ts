@@ -1,4 +1,4 @@
-import { JSONValue } from "opstooling-js";
+import { JSONValue } from "@eng-automation/js";
 
 export function getProtectedTagsPayload(): JSONValue {
   return [
