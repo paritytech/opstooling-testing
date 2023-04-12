@@ -88,5 +88,6 @@ export function getRepoPayload(params: { name: string; owner: string; node_id?: 
     default_branch: "master",
     subscribers_count: 0,
     network_count: 0,
+    has_discussions: false,
   };
 }

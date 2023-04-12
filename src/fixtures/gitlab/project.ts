@@ -1,4 +1,4 @@
-import { JSONValue } from "opstooling-js";
+import { JSONValue } from "@eng-automation/js";
 
 export function getProjectPayload(params: { id: number; owner: string; name: string }): JSONValue {
   return {
