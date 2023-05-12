@@ -7,6 +7,7 @@ export * from "./github/commitStatus";
 export * from "./github/issueComments";
 export * from "./github/pullRequest";
 export * from "./github/pushEvent";
+export * from "./github/ref";
 export * from "./github/repo";
 export * from "./github/repoRef";
 export * from "./github/user";
