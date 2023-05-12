@@ -1,5 +1,5 @@
 import { RestEndpointMethodTypes } from "@octokit/rest";
-import { PullRequestOpenedEvent } from "@octokit/webhooks-types";
+import { PullRequestClosedEvent, PullRequestOpenedEvent } from "@octokit/webhooks-types";
 
 import { getRepoPayload } from "./repo";
 import { getUserPayload } from "./user";
@@ -10,6 +10,22 @@ export function getPullRequestOpenedEventPayload(params: PullRequestParams): Pul
   const pr = getPullRequestPayload(params) as PullRequestOpenedEvent["pull_request"];
 
   return { sender: pr.user, action: "opened", number: pr.number, pull_request: pr, repository: pr.base.repo };
+}
+
+export function getPullRequestClosedEventPayload(
+  params: PullRequestParams & {
+    merged?: boolean;
+  },
+): PullRequestClosedEvent {
+  const pr = getPullRequestPayload(params) as PullRequestClosedEvent["pull_request"];
+
+  return {
+    sender: pr.user,
+    action: "closed",
+    number: pr.number,
+    pull_request: { ...pr, merged: params.merged ?? false },
+    repository: pr.base.repo,
+  };
 }
 
 export type PullRequestParams = {

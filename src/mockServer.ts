@@ -3,6 +3,8 @@ import * as mockttp from "mockttp";
 import path from "path";
 import selfsigned from "selfsigned";
 
+export type MockServer = mockttp.Mockttp;
+
 export type MockServerParams = {
   port: number;
   name: string;
@@ -21,7 +23,7 @@ export type MockServerParams = {
  Pay attention to `testCaPath` parameter, as in order to make Node respect that,
  you'll have to pass it in NODE_EXTRA_CA_CERTS in environment.
  */
-export async function startMockServer(params: MockServerParams): Promise<mockttp.Mockttp> {
+export async function startMockServer(params: MockServerParams): Promise<MockServer> {
   const { keyPath, certPath } = await ensureCert(params.testCaCertPath);
 
   const defaultParams = { https: { keyPath, certPath } };
