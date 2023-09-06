@@ -4,6 +4,7 @@ export * from "./github/branch";
 export * from "./github/commentWebhook";
 export * from "./github/commit";
 export * from "./github/commitStatus";
+export * from "./github/contents";
 export * from "./github/issueComments";
 export * from "./github/pullRequest";
 export * from "./github/pushEvent";
