@@ -20,7 +20,7 @@
   "dependencies": {
     "@eng-automation/js": "^0.0.21",
     "@octokit/rest": "^19.0.7",
-    "mockttp": "^3.6.2",
+    "mockttp": "^3.9.4",
     "node-fetch": "^2.6.7",
     "selfsigned": "^2.1.0"
   },
