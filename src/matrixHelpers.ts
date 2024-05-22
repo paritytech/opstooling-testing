@@ -1,7 +1,6 @@
 import { validatedFetch } from "@eng-automation/js";
 import Joi from "joi";
 
-
 type AccessTokenResponse = { access_token: string };
 
 export async function getAccessToken(matrixUrl: string, params: { user: string, password: string }): Promise<string> {
@@ -90,7 +89,7 @@ export async function postMessage(matrixUrl: string, params: {
 type LatestMessageResponse = {
   chunk: [{
     sender: string,
-    content: { body: string }
+    content: { body: string, formatted_body: string }
   }]
 }
 
@@ -99,19 +98,22 @@ export async function getLatestMessage(matrixUrl: string, params: {
   accessToken: string,
 }): Promise<{
   sender: string,
-  body: string
+  body: string,
+  formattedBody: string
 }> {
   const res = await validatedFetch<LatestMessageResponse>(
     `${matrixUrl}/_matrix/client/v3/rooms/${params.roomId}/messages?dir=b&limit=1&access_token=${params.accessToken}`,
     Joi.object<LatestMessageResponse>({
       chunk: Joi.array().items(Joi.object({
         sender: Joi.string().required(),
-        content: Joi.object({ body: Joi.string().required() })
+        content: Joi.object({ body: Joi.string().required() }),
+        formatted_body: Joi.object({ formatted_body: Joi.string().required() })
       }).required())
     }), { init: { headers: { "Content-Type": "application/json" } } });
 
   return {
     sender: res.chunk[0].sender,
-    body: res.chunk[0].content.body
+    body: res.chunk[0].content.body,
+    formattedBody: res.chunk[0].content.formatted_body
   };
 }
