@@ -108,19 +108,24 @@ type LatestMessageResponse = {
   ];
 };
 
-export async function getLatestMessage(
+export async function getLatestMessages(
   matrixUrl: string,
   params: {
     roomId: string;
     accessToken: string;
+    limit?: number;
   },
-): Promise<{
-  sender: string;
-  body: string;
-  formattedBody: string;
-}> {
+): Promise<
+  {
+    sender: string;
+    body: string;
+    formattedBody: string;
+  }[]
+> {
   const res = await validatedFetch<LatestMessageResponse>(
-    `${matrixUrl}/_matrix/client/v3/rooms/${params.roomId}/messages?dir=b&limit=1&access_token=${params.accessToken}`,
+    `${matrixUrl}/_matrix/client/v3/rooms/${params.roomId}/messages?dir=b&limit=${params.limit ?? "1"}&access_token=${
+      params.accessToken
+    }`,
     Joi.object<LatestMessageResponse>({
       chunk: Joi.array().items(
         Joi.object({
@@ -133,9 +138,21 @@ export async function getLatestMessage(
     { init: { headers: { "Content-Type": "application/json" } } },
   );
 
-  return {
-    sender: res.chunk[0].sender,
-    body: res.chunk[0].content.body,
-    formattedBody: res.chunk[0].content.formatted_body,
-  };
+  return res.chunk.map((message) => {
+    return { sender: message.sender, body: message.content.body, formattedBody: message.content.formatted_body };
+  });
+}
+
+export async function getLatestMessage(
+  matrixUrl: string,
+  params: {
+    roomId: string;
+    accessToken: string;
+  },
+): Promise<{
+  sender: string;
+  body: string;
+  formattedBody: string;
+}> {
+  return (await getLatestMessages(matrixUrl, params))[0];
 }
