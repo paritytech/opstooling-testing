@@ -103,7 +103,7 @@ type LatestMessageResponse = {
   chunk: [
     {
       sender: string;
-      content: { body: string; formatted_body: string };
+      content: { body: string; formatted_body: string | undefined };
     },
   ];
 };
@@ -119,7 +119,7 @@ export async function getLatestMessages(
   {
     sender: string;
     body: string;
-    formattedBody: string;
+    formattedBody: string | undefined;
   }[]
 > {
   const res = await validatedFetch<LatestMessageResponse>(
@@ -130,8 +130,7 @@ export async function getLatestMessages(
       chunk: Joi.array().items(
         Joi.object({
           sender: Joi.string().required(),
-          content: Joi.object({ body: Joi.string().required() }),
-          formatted_body: Joi.object({ formatted_body: Joi.string().required() }),
+          content: Joi.object({ body: Joi.string().required(), formatted_body: Joi.string() }),
         }).required(),
       ),
     }),
@@ -152,7 +151,7 @@ export async function getLatestMessage(
 ): Promise<{
   sender: string;
   body: string;
-  formattedBody: string;
+  formattedBody: string | undefined;
 }> {
   return (await getLatestMessages(matrixUrl, params))[0];
 }
