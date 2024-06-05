@@ -99,13 +99,19 @@ export async function postMessage(
   );
 }
 
+type MessageChunk = {
+  sender: string;
+  content: { body: string; formatted_body: string | undefined };
+  type: "m.room.message";
+};
+
+type NonMessageChunk = {
+  sender: string;
+  type: string;
+};
+
 type LatestMessageResponse = {
-  chunk: [
-    {
-      sender: string;
-      content: { body: string; formatted_body: string | undefined };
-    },
-  ];
+  chunk: (MessageChunk | NonMessageChunk)[];
 };
 
 export async function getLatestMessages(
@@ -128,18 +134,28 @@ export async function getLatestMessages(
     }`,
     Joi.object<LatestMessageResponse>({
       chunk: Joi.array().items(
-        Joi.object({
-          sender: Joi.string().required(),
-          content: Joi.object({ body: Joi.string().required(), formatted_body: Joi.string() }),
-        }).required(),
+        Joi.alternatives().try(
+          Joi.object({
+            sender: Joi.string().required(),
+            content: Joi.object({ body: Joi.string().required(), formatted_body: Joi.string() }),
+            type: Joi.string().valid("m.room.message"),
+          }).required(),
+          Joi.object({ sender: Joi.string().required().invalid("m.room.message"), type: Joi.string() }).required(),
+        ),
       ),
     }),
     { init: { headers: { "Content-Type": "application/json" } } },
   );
 
-  return res.chunk.map((message) => {
-    return { sender: message.sender, body: message.content.body, formattedBody: message.content.formatted_body };
-  });
+  return res.chunk
+    .filter((message) => message.type === "m.room.message")
+    .map((message) => {
+      return {
+        sender: message.sender,
+        body: (message as MessageChunk).content.body,
+        formattedBody: (message as MessageChunk).content.formatted_body,
+      };
+    });
 }
 
 export async function getLatestMessage(
