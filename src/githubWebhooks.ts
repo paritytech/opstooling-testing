@@ -1,6 +1,5 @@
 import { WebhookEvent } from "@octokit/webhooks-types";
 import { createHmac } from "crypto";
-import fetch from "node-fetch";
 
 export type TriggerWebhookParams = {
   payload: WebhookEvent;

@@ -19,10 +19,10 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 22.x
 
       - name: Install
-        run: yarn install --immutable --network-concurrency 1
+        run: yarn install --immutable
 
       - name: Build
         run: yarn build
