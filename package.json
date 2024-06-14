@@ -4,7 +4,6 @@
   "description": "Parity EngAutomation test helpers and fixtures",
   "author": "Parity <admin@parity.io> (https://parity.io)",
   "license": "Apache-2.0",
-  "private": false,
   "type": "commonjs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,33 +13,32 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "imports": {
+    "#src/*": "./dist/*.js"
+  },
   "files": [
     "dist"
   ],
   "dependencies": {
-    "@eng-automation/js": "^0.0.21",
+    "@eng-automation/js": "^2.1.0",
     "@octokit/rest": "^19.0.7",
     "mockttp": "^3.9.4",
-    "node-fetch": "^2.6.7",
     "selfsigned": "^2.1.0"
   },
   "devDependencies": {
-    "@eng-automation/js-style": "^2.0.0",
+    "@eng-automation/js-style": "^3.1.0",
     "@octokit/webhooks-types": "^5.8.0",
-    "@types/node": "^16",
-    "@types/node-fetch": "^2.6.2",
-    "ts-patch": "^2.0.2",
-    "typescript": "^4.6.2",
-    "typescript-transform-paths": "^3.4.4"
+    "@types/node": "^20",
+    "typescript": "^5.4.5"
   },
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc -w",
-    "lint": "eslint '{*,**/*}.{cjs,ts}' && prettier --check '{*,**/*}.json'",
+    "lint": "npx eslint '{*,**/*}.{cjs,ts}' && npx prettier --check '{*,**/*}.json'",
     "fix": "yarn fix:eslint '{*,**/*}.{cjs,js,ts}' && yarn fix:prettier '{*,**/*}.json'",
-    "fix:eslint": "eslint --fix",
-    "fix:prettier": "prettier --write",
-    "prepare": "ts-patch install -s",
+    "fix:eslint": "npx eslint --fix",
+    "fix:prettier": "npx prettier --write",
     "typecheck": "tsc --noEmit"
-  }
+  },
+  "packageManager": "yarn@4.3.0"
 }
