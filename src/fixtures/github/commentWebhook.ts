@@ -7,6 +7,7 @@ import { getUserPayload } from "./user";
 export function getCommentWebhookPayload(params: {
   body: string;
   login: string;
+  issueAuthorLogin?: string;
   org: string;
   repo: string;
   installation?: {
@@ -18,6 +19,8 @@ export function getCommentWebhookPayload(params: {
     id: 25299948,
     node_id: "MDIzOkludGVncmF0aW9uSW5zdGFsbGF0aW9uMjUyOTk5NDg=",
   };
+
+  const issueAuthorUser = getUserPayload({ login: params.issueAuthorLogin ?? params.login });
 
   return {
     action: "created",
@@ -32,7 +35,7 @@ export function getCommentWebhookPayload(params: {
       node_id: "PR_kwDOHQICPM4-OcPh",
       number: 4,
       title: "Test PR",
-      user: getUserPayload({ login: params.login }),
+      user: issueAuthorUser,
       labels: [],
       state: "open",
       locked: false,
