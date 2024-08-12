@@ -5,7 +5,7 @@ import { Committer, User as WebhooksUser } from "@octokit/webhooks-types";
 // Defining it as an intersection solves those.
 export type User = RestEndpointMethodTypes["users"]["getByUsername"]["response"]["data"] & WebhooksUser;
 
-export function getUserPayload(params: { id?: number; login: string }): User {
+export function getUserPayload(params: { bio?: string; id?: number; login: string }): User {
   const id = params.id ?? 588262;
   return {
     login: params.login,
@@ -31,7 +31,7 @@ export function getUserPayload(params: { id?: number; login: string }): User {
     email: `${params.login}@example.com`,
     blog: "https://github.com/blog",
     hireable: false,
-    bio: "There once was...",
+    bio: params.bio ?? "There once was...",
     public_repos: 2,
     public_gists: 1,
     location: "San Francisco",
