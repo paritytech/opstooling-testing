@@ -128,8 +128,9 @@ export async function getLatestMessages(
     formattedBody: string | undefined;
   }[]
 > {
+  const filter = { types: ["m.room.message"] };
   const res = await validatedFetch<LatestMessageResponse>(
-    `${matrixUrl}/_matrix/client/v3/rooms/${params.roomId}/messages?dir=b&limit=${params.limit ?? "1"}&access_token=${
+    `${matrixUrl}/_matrix/client/v3/rooms/${params.roomId}/messages?dir=b&filter=${JSON.stringify(filter)}&limit=${params.limit ?? "1"}&access_token=${
       params.accessToken
     }`,
     Joi.object<LatestMessageResponse>({
